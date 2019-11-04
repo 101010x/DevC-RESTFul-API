@@ -5,10 +5,11 @@
 
 //Declaration of express app
 const express = require('express');
-const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const Recipe = require('./models/recipe');
+
+const app = express();
 
 
 mongoose.connect('mongodb+srv://mutugi:pgXhEdxE4FXNnteY@cluster0-gsja1.mongodb.net/test?retryWrites=true&w=majority',{useNewUrlParser: true, useUnifiedTopology: true})
@@ -42,7 +43,7 @@ app.post('/api/recipes', (req,res,next) => {
     ()=> {
       res.status(201).json({
         message: 'Post successfully saved!'
-      })
+      });
     }).catch((error) => {
       res.status(400).json({
         error: error
@@ -52,30 +53,18 @@ app.post('/api/recipes', (req,res,next) => {
 
 //route to find a single element
 //we use :id to show that it is dynamic
-app.use('/api/recipes/:id',(req,res,next) => {
+app.get('/api/recipes/:id',(req,res,next) => {
   Recipe.findOne({
     _id: req.params.id
   }).then(
     (recipe) => {
-      res.status(200).json(recipe)
+      res.status(200).json(recipe);
   }).catch(
     (error) => {
-      error: error
-  });
-});
-
-//get route
-app.use('/api/recipes',(req,res,next) => {
-  Recipe.find().then(
-    (recipes) => {
-      res.status(200).json(recipes);
-    }
-  ).catch(
-    () => {
       res.status(400).json({
-       error: error
+        error: error
       });
-    });
+  });
 });
 
 //route to update/modify an item
@@ -109,16 +98,26 @@ app.delete('/api/recipes/:id', (req, res, next) => {
       res.status(200).json({
         message: 'Deleted!'
       });
-    }
-  ).catch(
+    }).catch(
     (error) => {
       res.status(400).json({
         error: error
       });
-    }
-  );
+    });
 });
 
-
+//get route
+app.get('/api/recipes',(req,res,next) => {
+  Recipe.find().then(
+    (recipes) => {
+      res.status(200).json(recipes);
+    }
+  ).catch(
+    () => {
+      res.status(400).json({
+       error: error
+      });
+    });
+});
 
 module.exports = app;
